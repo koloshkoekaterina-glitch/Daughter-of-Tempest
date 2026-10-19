@@ -1,0 +1,550 @@
+<!DOCTYPE html>
+<html lang="uk">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Daughter of the Tempest — Інтерактивна подорож</title>
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Montserrat:wght@300;400;500;600&display=swap" rel="stylesheet">
+    
+    <script>
+        tailwind.config = {
+            theme: {
+                extend: {
+                    colors: {
+                        night: {
+                            900: '#060a12',
+                            800: '#0b1326',
+                            700: '#121e36',
+                            600: '#1b2a4a'
+                        },
+                        ice: {
+                            100: '#eef7fc',
+                            200: '#d0e8f2',
+                            300: '#9bbecd',
+                            400: '#6793aa'
+                        },
+                        gold: {
+                            300: '#f3e5ab',
+                            400: '#e0c38c',
+                            500: '#d4af37',
+                            600: '#aa8823'
+                        }
+                    },
+                    fontFamily: {
+                        cinzel: ['Cinzel', 'serif'],
+                        montserrat: ['Montserrat', 'sans-serif']
+                    }
+                }
+            }
+        }
+    </script>
+
+    <style>
+        body {
+            font-family: 'Montserrat', sans-serif;
+            background-color: #060a12;
+            color: #eef7fc;
+            overflow-x: hidden;
+        }
+
+        .font-cinzel {
+            font-family: 'Cinzel', serif;
+        }
+
+        /* Custom Star Canvas Background */
+        #starCanvas {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100vw;
+            height: 100vh;
+            z-index: 0;
+            pointer-events: none;
+        }
+
+        /* Glassmorphism Cards */
+        .glass-card {
+            background: rgba(18, 30, 54, 0.65);
+            backdrop-filter: blur(12px);
+            -webkit-backdrop-filter: blur(12px);
+            border: 1px solid rgba(155, 190, 205, 0.25);
+            box-shadow: 0 8px 32px 0 rgba(0, 0, 0, 0.4);
+        }
+
+        .glass-card-gold {
+            background: rgba(18, 30, 54, 0.7);
+            backdrop-filter: blur(14px);
+            -webkit-backdrop-filter: blur(14px);
+            border: 1px solid rgba(212, 175, 55, 0.35);
+            box-shadow: 0 10px 40px rgba(212, 175, 55, 0.15);
+        }
+
+        /* Lion Animations */
+        .lion-float {
+            animation: lionHover 4.5s ease-in-out infinite;
+        }
+
+        @keyframes lionHover {
+            0%, 100% {
+                transform: translateY(0px) rotate(0deg);
+                filter: drop-shadow(0 10px 20px rgba(155, 190, 205, 0.3));
+            }
+            50% {
+                transform: translateY(-18px) rotate(-1.5deg);
+                filter: drop-shadow(0 25px 30px rgba(155, 190, 205, 0.5));
+            }
+        }
+
+        /* Lion Flight across screen */
+        .lion-fly-across {
+            animation: lionFly 2.2s cubic-bezier(0.45, 0.05, 0.55, 0.95) forwards;
+        }
+
+        @keyframes lionFly {
+            0% {
+                transform: translate(0, 0) scale(1) rotate(0deg);
+                opacity: 1;
+            }
+            30% {
+                transform: translate(-100px, -40px) scale(1.15) rotate(-8deg);
+                opacity: 0.95;
+            }
+            100% {
+                transform: translate(120vw, -200px) scale(0.6) rotate(15deg);
+                opacity: 0;
+            }
+        }
+
+        /* Lion Return & Swoop Animation */
+        .lion-fly-in-and-out {
+            animation: lionSwoop 2.5s cubic-bezier(0.25, 1, 0.5, 1) forwards;
+        }
+
+        @keyframes lionSwoop {
+            0% {
+                transform: translate(-100vw, 150px) scale(0.5) rotate(-15deg);
+                opacity: 0;
+            }
+            50% {
+                transform: translate(0vw, -20px) scale(1.1) rotate(5deg);
+                opacity: 1;
+                filter: drop-shadow(0 0 35px rgba(212, 175, 55, 0.8));
+            }
+            100% {
+                transform: translate(110vw, -150px) scale(0.7) rotate(12deg);
+                opacity: 0;
+            }
+        }
+
+        /* Custom Button Hover & Glow Effects */
+        .btn-magic {
+            background: linear-gradient(135deg, rgba(18, 30, 54, 0.9) 0%, rgba(27, 42, 74, 0.9) 100%);
+            border: 1px solid rgba(212, 175, 55, 0.6);
+            transition: all 0.4s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .btn-magic::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(90deg, transparent, rgba(208, 232, 242, 0.25), transparent);
+            transition: 0.6s;
+        }
+
+        .btn-magic:hover::before {
+            left: 100%;
+        }
+
+        .btn-magic:hover {
+            transform: translateY(-3px) scale(1.02);
+            border-color: #d4af37;
+            box-shadow: 0 0 25px rgba(212, 175, 55, 0.5), inset 0 0 10px rgba(208, 232, 242, 0.2);
+        }
+
+        /* Smooth stage transitions */
+        .stage {
+            transition: opacity 0.8s ease, transform 0.8s ease;
+        }
+
+        .stage-hidden {
+            opacity: 0;
+            pointer-events: none;
+            transform: translateY(20px) scale(0.98);
+            position: absolute;
+            width: 100%;
+            top: 0;
+            left: 0;
+        }
+
+        .stage-active {
+            opacity: 1;
+            pointer-events: auto;
+            transform: translateY(0) scale(1);
+            position: relative;
+        }
+
+        /* Light ornamental border frame */
+        .ornament-frame {
+            position: relative;
+        }
+        .ornament-frame::after {
+            content: '';
+            position: absolute;
+            inset: 6px;
+            border: 1px solid rgba(212, 175, 55, 0.25);
+            border-radius: 1rem;
+            pointer-events: none;
+        }
+
+        /* Modal Overlay for Zooming Images */
+        #imageModal {
+            transition: opacity 0.3s ease;
+        }
+    </style>
+</head>
+<body class="min-h-screen flex flex-col justify-between relative selection:bg-gold-500 selection:text-night-900">
+
+    <!-- Interactive Particle / Starfield Canvas -->
+    <canvas id="starCanvas"></canvas>
+
+    <!-- Flying Lion Companion Overlay -->
+    <div id="lionContainer" class="fixed z-40 inset-0 pointer-events-none flex items-center justify-center">
+        <img id="flyingLion" src="image_1f68aa.png" alt="Flying Mountain Lion" 
+             class="w-64 md:w-80 lg:w-96 lion-float transition-all duration-300 drop-shadow-[0_10px_25px_rgba(155,190,205,0.4)]" />
+    </div>
+
+    <!-- Header / Branding -->
+    <header class="relative z-10 py-6 px-4 text-center">
+        <p class="text-xs uppercase tracking-[0.3em] text-ice-300 font-medium mb-1">Braidee Otto • Book Universe</p>
+        <h1 class="font-cinzel text-2xl md:text-4xl font-bold tracking-widest text-transparent bg-clip-text bg-gradient-to-r from-ice-200 via-gold-400 to-ice-200 uppercase">
+            Daughter of the Tempest
+        </h1>
+        <div class="w-32 h-[1px] bg-gradient-to-r from-transparent via-gold-500 to-transparent mx-auto mt-2"></div>
+    </header>
+
+    <!-- MAIN CONTENT AREA -->
+    <main class="relative z-10 container mx-auto px-4 py-4 flex-grow flex items-center justify-center max-w-6xl">
+
+        <!-- ================= STAGE 0: WELCOME SCREEN ================= -->
+        <section id="stage0" class="stage stage-active text-center max-w-2xl mx-auto py-8">
+            <div class="glass-card p-8 md:p-12 rounded-3xl ornament-frame my-4">
+                <span class="inline-block px-3 py-1 text-xs font-semibold tracking-widest text-gold-400 bg-night-800/80 rounded-full border border-gold-500/30 mb-4">
+                    МІФОЛОГІЧНЕ ФЕНТЕЗІ
+                </span>
+                
+                <h2 class="font-cinzel text-3xl md:text-5xl font-bold mb-4 text-ice-100 leading-tight">
+                    Ласкаво просимо у світ Бурі та Тіней
+                </h2>
+                
+                <p class="text-ice-300 text-sm md:text-base leading-relaxed mb-8 max-w-lg mx-auto">
+                    Вас зустрічає крилатий гірський лев — охоронець давніх таємниць. Вирушайте у подорож, щоб познайомитися з головними героїнями та дізнатися теми й тропи цієї епічної історії.
+                </p>
+
+                <button id="btnStage0" onclick="goToStage1()" class="btn-magic px-8 py-4 rounded-xl text-gold-300 font-cinzel font-bold text-lg tracking-wider uppercase flex items-center justify-center mx-auto space-x-3 group cursor-pointer shadow-lg">
+                    <span>Розпочати подорож</span>
+                    <svg class="w-5 h-5 text-gold-400 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                    </svg>
+                </button>
+            </div>
+        </section>
+
+
+        <!-- ================= STAGE 1: MAIN HEROINES ================= -->
+        <section id="stage1" class="stage stage-hidden w-full py-4">
+            <div class="text-center mb-8">
+                <h2 class="font-cinzel text-2xl md:text-4xl font-bold text-ice-100 mb-2">Головні Героїні</h2>
+                <p class="text-ice-300 text-sm">Songbird of the Sorrows</p>
+                <div class="w-24 h-[1px] bg-gold-500/50 mx-auto mt-2"></div>
+            </div>
+
+            <!-- Heroines Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-10 max-w-4xl mx-auto mb-10">
+                
+                <!-- Heroine 1: Aella -->
+                <div class="glass-card-gold rounded-2xl overflow-hidden group hover:scale-[1.02] transition-all duration-500 flex flex-col">
+                    <div class="relative overflow-hidden cursor-pointer" onclick="openModal('Aella.jpg', 'Aella — Spy. Thief. Princess. Songbird.')">
+                        <img src="Aella.jpg" alt="Aella" class="w-full h-[420px] object-cover object-top transform group-hover:scale-105 transition-transform duration-700">
+                        <div class="absolute inset-0 bg-gradient-to-t from-night-900 via-transparent to-transparent opacity-80"></div>
+                        <div class="absolute bottom-3 right-3 bg-night-900/80 p-2 rounded-full border border-gold-500/30 text-gold-400 hover:text-white">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path></svg>
+                        </div>
+                    </div>
+                    <div class="p-6 text-center flex-grow flex flex-col justify-center">
+                        <h3 class="font-cinzel text-3xl font-bold text-gold-400 mb-1">ÆLLA</h3>
+                        <p class="text-xs tracking-[0.25em] text-ice-200 uppercase font-medium">Spy • Thief • Princess • Songbird</p>
+                    </div>
+                </div>
+
+                <!-- Heroine 2: Nyssa -->
+                <div class="glass-card-gold rounded-2xl overflow-hidden group hover:scale-[1.02] transition-all duration-500 flex flex-col">
+                    <div class="relative overflow-hidden cursor-pointer" onclick="openModal('Nyssa.jpg', 'Nyssa — Best Friend. Poet. Songbird.')">
+                        <img src="Nyssa.jpg" alt="Nyssa" class="w-full h-[420px] object-cover object-top transform group-hover:scale-105 transition-transform duration-700">
+                        <div class="absolute inset-0 bg-gradient-to-t from-night-900 via-transparent to-transparent opacity-80"></div>
+                        <div class="absolute bottom-3 right-3 bg-night-900/80 p-2 rounded-full border border-gold-500/30 text-gold-400 hover:text-white">
+                            <svg class="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M21 21l-6-6m2-5a7 7 0 11-14 0 7 7 0 0114 0zM10 7v3m0 0v3m0-3h3m-3 0H7"></path></svg>
+                        </div>
+                    </div>
+                    <div class="p-6 text-center flex-grow flex flex-col justify-center">
+                        <h3 class="font-cinzel text-3xl font-bold text-gold-400 mb-1">NYSSA</h3>
+                        <p class="text-xs tracking-[0.25em] text-ice-200 uppercase font-medium">Best Friend • Poet • Songbird</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Action Button -->
+            <div class="text-center">
+                <button id="btnStage1" onclick="goToStage2()" class="btn-magic px-8 py-4 rounded-xl text-gold-300 font-cinzel font-bold text-base md:text-lg tracking-wider uppercase inline-flex items-center space-x-3 cursor-pointer shadow-lg">
+                    <span>Перейти до Тем та Тропів</span>
+                    <svg class="w-5 h-5 text-gold-400 transform group-hover:translate-x-1 transition-transform" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M14 5l7 7m0 0l-7 7m7-7H3"></path>
+                    </svg>
+                </button>
+            </div>
+        </section>
+
+
+        <!-- ================= STAGE 2: THEMES & TROPES ================= -->
+        <section id="stage2" class="stage stage-hidden w-full py-4">
+            <div class="text-center mb-8">
+                <h2 class="font-cinzel text-2xl md:text-4xl font-bold text-ice-100 mb-2">Теми та Тропи Книги</h2>
+                <p class="text-ice-300 text-sm">Світ епічного романтичного фентезі</p>
+                <div class="w-24 h-[1px] bg-gold-500/50 mx-auto mt-2"></div>
+            </div>
+
+            <!-- Posters Grid -->
+            <div class="grid grid-cols-1 md:grid-cols-2 gap-6 lg:gap-10 max-w-5xl mx-auto mb-10">
+                
+                <!-- Poster 1: Themes -->
+                <div class="glass-card rounded-2xl overflow-hidden p-3 group hover:border-gold-500/50 transition-all duration-500">
+                    <div class="relative overflow-hidden rounded-xl cursor-pointer" onclick="openModal('image_1f6c4a.jpg', 'Теми книги')">
+                        <img src="image_1f6c4a.jpg" alt="Теми книги" class="w-full h-auto max-h-[550px] object-contain rounded-xl transform group-hover:scale-102 transition-transform duration-500 mx-auto">
+                        <div class="absolute inset-0 bg-gradient-to-t from-night-900/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-4">
+                            <span class="bg-night-900/90 text-gold-300 px-4 py-2 rounded-full text-xs font-cinzel border border-gold-500/40">Натисніть для збільшення</span>
+                        </div>
+                    </div>
+                    <div class="p-4 text-center">
+                        <h3 class="font-cinzel text-xl font-bold text-ice-100">Теми Книги</h3>
+                        <p class="text-xs text-ice-300 mt-1">Ключові цитати та емоційний контекст</p>
+                    </div>
+                </div>
+
+                <!-- Poster 2: Tropes -->
+                <div class="glass-card rounded-2xl overflow-hidden p-3 group hover:border-gold-500/50 transition-all duration-500">
+                    <div class="relative overflow-hidden rounded-xl cursor-pointer" onclick="openModal('image_1f6cc1.jpg', 'Тропи книги')">
+                        <img src="image_1f6cc1.jpg" alt="Тропи книги" class="w-full h-auto max-h-[550px] object-contain rounded-xl transform group-hover:scale-102 transition-transform duration-500 mx-auto">
+                        <div class="absolute inset-0 bg-gradient-to-t from-night-900/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end justify-center pb-4">
+                            <span class="bg-night-900/90 text-gold-300 px-4 py-2 rounded-full text-xs font-cinzel border border-gold-500/40">Натисніть для збільшення</span>
+                        </div>
+                    </div>
+                    <div class="p-4 text-center">
+                        <h3 class="font-cinzel text-xl font-bold text-ice-100">Список Тропів</h3>
+                        <p class="text-xs text-ice-300 mt-1">Повільний роман, Грецькі міфи, Кращі друзі</p>
+                    </div>
+                </div>
+
+            </div>
+
+            <!-- Reset Button -->
+            <div class="text-center">
+                <button onclick="restartJourney()" class="btn-magic px-8 py-4 rounded-xl text-ice-200 font-cinzel font-bold text-base tracking-wider uppercase inline-flex items-center space-x-3 cursor-pointer">
+                    <svg class="w-5 h-5 text-gold-400" fill="none" stroke="currentColor" viewBox="0 0 24 24"><path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 4v5h.582m15.356 2A8.001 8.001 0 004.582 9m0 0H9m11 11v-5h-.581m0 0a8.003 8.003 0 01-15.357-2m15.357 2H15"></path></svg>
+                    <span>Повернутися на початок</span>
+                </button>
+            </div>
+        </section>
+
+    </main>
+
+    <!-- Footer -->
+    <footer class="relative z-10 py-4 text-center text-xs text-ice-400">
+        <p>© Daughter of the Tempest — Інтерактивна презентація</p>
+    </footer>
+
+    <!-- Fullscreen Image Modal -->
+    <div id="imageModal" class="fixed inset-0 z-50 bg-night-900/90 backdrop-blur-md hidden opacity-0 flex items-center justify-center p-4" onclick="closeModal()">
+        <div class="relative max-w-4xl w-full max-h-[90vh] flex flex-col items-center justify-center" onclick="event.stopPropagation()">
+            <button onclick="closeModal()" class="absolute -top-10 right-0 text-gold-400 hover:text-white text-3xl font-bold focus:outline-none">&times;</button>
+            <img id="modalImg" src="" alt="Zoomed view" class="max-h-[80vh] w-auto object-contain rounded-lg border border-gold-500/30 shadow-2xl">
+            <p id="modalCaption" class="font-cinzel text-gold-300 mt-3 text-center text-sm md:text-base"></p>
+        </div>
+    </div>
+
+
+    <!-- JavaScript Interactive Logic & Effects -->
+    <script>
+        // State Management
+        let currentStage = 0;
+
+        function goToStage1() {
+            if (currentStage !== 0) return;
+            currentStage = 1;
+
+            const lion = document.getElementById('flyingLion');
+            const lionContainer = document.getElementById('lionContainer');
+
+            // Trigger flying animation
+            lion.classList.remove('lion-float');
+            lion.classList.add('lion-fly-across');
+
+            // Transition Stage 0 -> Stage 1
+            setTimeout(() => {
+                document.getElementById('stage0').classList.remove('stage-active');
+                document.getElementById('stage0').classList.add('stage-hidden');
+
+                document.getElementById('stage1').classList.remove('stage-hidden');
+                document.getElementById('stage1').classList.add('stage-active');
+            }, 800);
+
+            // Reset lion position for later use
+            setTimeout(() => {
+                lionContainer.style.display = 'none';
+                lion.classList.remove('lion-fly-across');
+            }, 2300);
+        }
+
+        function goToStage2() {
+            if (currentStage !== 1) return;
+            currentStage = 2;
+
+            const lion = document.getElementById('flyingLion');
+            const lionContainer = document.getElementById('lionContainer');
+
+            // Re-enable lion container for swooping animation
+            lionContainer.style.display = 'flex';
+            lion.classList.add('lion-fly-in-and-out');
+
+            // Transition Stage 1 -> Stage 2
+            setTimeout(() => {
+                document.getElementById('stage1').classList.remove('stage-active');
+                document.getElementById('stage1').classList.add('stage-hidden');
+
+                document.getElementById('stage2').classList.remove('stage-hidden');
+                document.getElementById('stage2').classList.add('stage-active');
+            }, 1000);
+
+            setTimeout(() => {
+                lionContainer.style.display = 'none';
+                lion.classList.remove('lion-fly-in-and-out');
+            }, 2600);
+        }
+
+        function restartJourney() {
+            currentStage = 0;
+            const lion = document.getElementById('flyingLion');
+            const lionContainer = document.getElementById('lionContainer');
+
+            lionContainer.style.display = 'flex';
+            lion.classList.remove('lion-fly-across', 'lion-fly-in-and-out');
+            lion.classList.add('lion-float');
+
+            document.getElementById('stage2').classList.remove('stage-active');
+            document.getElementById('stage2').classList.add('stage-hidden');
+
+            document.getElementById('stage0').classList.remove('stage-hidden');
+            document.getElementById('stage0').classList.add('stage-active');
+            window.scrollTo({ top: 0, behavior: 'smooth' });
+        }
+
+        // Image Modal Functions
+        function openModal(imgSrc, caption) {
+            const modal = document.getElementById('imageModal');
+            const modalImg = document.getElementById('modalImg');
+            const modalCaption = document.getElementById('modalCaption');
+
+            modalImg.src = imgSrc;
+            modalCaption.innerText = caption;
+
+            modal.classList.remove('hidden');
+            setTimeout(() => {
+                modal.classList.add('opacity-100');
+            }, 10);
+        }
+
+        function closeModal() {
+            const modal = document.getElementById('imageModal');
+            modal.classList.remove('opacity-100');
+            setTimeout(() => {
+                modal.classList.add('hidden');
+            }, 300);
+        }
+
+        // Starfield Canvas Animation
+        const canvas = document.getElementById('starCanvas');
+        const ctx = canvas.getContext('2d');
+
+        let stars = [];
+        const numStars = 120;
+
+        function resizeCanvas() {
+            canvas.width = window.innerWidth;
+            canvas.height = window.innerHeight;
+        }
+
+        class Star {
+            constructor() {
+                this.reset();
+            }
+
+            reset() {
+                this.x = Math.random() * canvas.width;
+                this.y = Math.random() * canvas.height;
+                this.size = Math.random() * 1.8 + 0.3;
+                this.alpha = Math.random();
+                this.speed = Math.random() * 0.015 + 0.005;
+                this.color = Math.random() > 0.3 ? '#d0e8f2' : '#d4af37';
+            }
+
+            update() {
+                this.alpha += this.speed;
+                if (this.alpha > 1 || this.alpha < 0.1) {
+                    this.speed = -this.speed;
+                }
+            }
+
+            draw() {
+                ctx.save();
+                ctx.globalAlpha = Math.abs(this.alpha);
+                ctx.fillStyle = this.color;
+                ctx.beginPath();
+                ctx.arc(this.x, this.y, this.size, 0, Math.PI * 2);
+                ctx.fill();
+                ctx.restore();
+            }
+        }
+
+        function initStars() {
+            resizeCanvas();
+            stars = [];
+            for (let i = 0; i < numStars; i++) {
+                stars.push(new Star());
+            }
+        }
+
+        function animateStars() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            stars.forEach(star => {
+                star.update();
+                star.draw();
+            });
+            requestAnimationFrame(animateStars);
+        }
+
+        window.addEventListener('resize', resizeCanvas);
+
+        window.onload = function() {
+            initStars();
+            animateStars();
+        };
+    </script>
+</body>
+</html>
