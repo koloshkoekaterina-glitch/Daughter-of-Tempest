@@ -35,7 +35,7 @@
             }
         }
     </script>
-    <!-- FontAwesome for Icons -->
+    <!-- FontAwesome Icons -->
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
     <style>
         @import url('https://fonts.googleapis.com/css2?family=Cinzel:wght@400;600;700;900&family=Cormorant+Garamond:ital,wght@0,400;0,600;0,700;1,400&family=Montserrat:wght@300;400;500;600&display=swap');
@@ -47,21 +47,14 @@
             overflow-x: hidden;
         }
 
-        .font-cinzel {
-            font-family: 'Cinzel', serif;
-        }
-
-        .font-cormorant {
-            font-family: 'Cormorant Garamond', serif;
-        }
+        .font-cinzel { font-family: 'Cinzel', serif; }
+        .font-cormorant { font-family: 'Cormorant Garamond', serif; }
 
         /* Canvas background overlay */
         #starCanvas {
             position: fixed;
-            top: 0;
-            left: 0;
-            width: 100vw;
-            height: 100vh;
+            top: 0; left: 0;
+            width: 100vw; height: 100vh;
             pointer-events: none;
             z-index: 0;
         }
@@ -76,35 +69,23 @@
 
         /* Floating Bob Animation for Lion */
         @keyframes gentleHover {
-            0%, 100% {
-                transform: translateY(0px) rotate(0deg);
-            }
-            50% {
-                transform: translateY(-16px) rotate(1deg);
-            }
+            0%, 100% { transform: translateY(0px) rotate(0deg); }
+            50% { transform: translateY(-16px) rotate(1deg); }
         }
 
         .lion-hover {
             animation: gentleHover 3.5s ease-in-out infinite;
         }
 
-        /* Realistic Flapping Wings animations */
+        /* Flapping Wings animations */
         @keyframes flapWingLeft {
-            0%, 100% {
-                transform: rotate(0deg) scale(1, 1);
-            }
-            50% {
-                transform: rotate(-12deg) scale(0.92, 1.08);
-            }
+            0%, 100% { transform: rotate(0deg) scale(1, 1); }
+            50% { transform: rotate(-12deg) scale(0.92, 1.08); }
         }
 
         @keyframes flapWingRight {
-            0%, 100% {
-                transform: rotate(0deg) scale(1, 1);
-            }
-            50% {
-                transform: rotate(12deg) scale(0.92, 1.08);
-            }
+            0%, 100% { transform: rotate(0deg) scale(1, 1); }
+            50% { transform: rotate(12deg) scale(0.92, 1.08); }
         }
 
         .wing-animate-left {
@@ -152,9 +133,7 @@
             pointer-events: none;
             transform: scale(0.96) translateY(20px);
             position: absolute;
-            top: 0;
-            left: 0;
-            right: 0;
+            top: 0; left: 0; right: 0;
         }
 
         .stage-visible {
@@ -178,11 +157,7 @@
             transform: translateY(-2px);
         }
 
-        .btn-mythic:active {
-            transform: translateY(1px);
-        }
-
-        /* Decorative Oval Frame for Portraits */
+        /* Oval Frame for Portraits */
         .oval-portrait-frame {
             border-radius: 50% / 45%;
             border: 4px solid #d4af37;
@@ -191,13 +166,30 @@
             position: relative;
         }
 
+        /* Zoom Trigger Overlay Indicator */
+        .zoom-overlay {
+            opacity: 0;
+            transition: opacity 0.3s ease;
+            background: rgba(11, 16, 29, 0.65);
+            backdrop-filter: blur(2px);
+        }
+
+        .zoom-trigger:hover .zoom-overlay {
+            opacity: 1;
+        }
+
+        /* Modal Image Animations */
+        #zoomModal {
+            transition: opacity 0.3s ease, visibility 0.3s ease;
+        }
+
+        #modalImage {
+            transition: transform 0.3s ease;
+        }
+
         /* Custom Scrollbar */
-        ::-webkit-scrollbar {
-            width: 8px;
-        }
-        ::-webkit-scrollbar-track {
-            background: #0b101d;
-        }
+        ::-webkit-scrollbar { width: 8px; }
+        ::-webkit-scrollbar-track { background: #0b101d; }
         ::-webkit-scrollbar-thumb {
             background: #1a243b;
             border-radius: 4px;
@@ -210,7 +202,7 @@
     <!-- Background Canvas for Dust Particles & Stars -->
     <canvas id="starCanvas"></canvas>
 
-    <!-- Top Navigation Header -->
+    <!-- Header Navigation -->
     <header class="relative z-20 container mx-auto px-6 py-6 flex justify-between items-center border-b border-gold-500/20">
         <div class="flex items-center space-x-3 cursor-pointer" onclick="goToStage(1)">
             <div class="w-10 h-10 rounded-full border border-gold-500 flex items-center justify-center bg-night-800 text-gold-400">
@@ -222,7 +214,6 @@
             </div>
         </div>
 
-        <!-- Navigation Buttons -->
         <nav class="hidden md:flex items-center space-x-6 text-sm font-cinzel">
             <button onclick="goToStage(1)" id="nav-btn-1" class="transition-colors duration-300 py-1 border-b-2 border-gold-500 text-gold-400 font-semibold">
                 01. Гірський Лев
@@ -239,59 +230,45 @@
     <!-- MAIN INTERACTIVE CONTAINER -->
     <main class="relative z-10 container mx-auto px-4 py-6 flex-grow flex flex-col items-center justify-center">
 
-        <!-- ORIGINAL MOUNTAIN LION ILLUSTRATION WITH ANIMATED WING LAYERS -->
-        <div id="lionContainer" class="relative z-30 mb-4 lion-hover lion-transition cursor-pointer group" onclick="triggerLionRoar()" title="Натисніть на Лева, щоб активувати магічний політ!">
+        <!-- WINGED MOUNTAIN LION GUARDIAN -->
+        <div id="lionContainer" class="relative z-30 mb-4 lion-hover lion-transition cursor-pointer group" onclick="triggerLionRoar()" title="Натисніть на Лева для магічного змаху!">
             
-            <!-- Tooltip Badge -->
             <div class="absolute -top-6 left-1/2 -translate-x-1/2 whitespace-nowrap text-xs text-gold-400 opacity-0 group-hover:opacity-100 transition-opacity duration-300 font-cormorant tracking-widest bg-night-800/90 px-3 py-1 rounded-full border border-gold-500/40 z-40">
                 ✨ Натисніть на мене або кнопку далі!
             </div>
 
-            <!-- COMPOSITE SVG CONTAINER CONTAINING EXACT ORIGINAL VINTAGE LINE ART IMAGE -->
             <div class="relative w-64 h-64 md:w-80 md:h-80 mx-auto filter drop-shadow-[0_0_20px_rgba(212,175,55,0.35)]">
-                
                 <svg class="w-full h-full" viewBox="0 0 500 500" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <defs>
-                        <!-- Exact Image Embedded as Source -->
                         <pattern id="lionImagePattern" patternUnits="userSpaceOnUse" width="500" height="500">
-                            <!-- Image URL using original uploaded reference art -->
-                            <image href="acaae01c-d4c4-4ba3-9115-12ef2bb9f7e3.jpg" x="0" y="0" width="500" height="500" preserveAspectRatio="xMidYMid slice"/>
+                            <!-- Lion image path ready for GitHub Pages: lion.jpg -->
+                            <image href="lion.jpg" x="0" y="0" width="500" height="500" preserveAspectRatio="xMidYMid slice" onerror="this.setAttribute('href', 'acaae01c-d4c4-4ba3-9115-12ef2bb9f7e3.jpg')"/>
                         </pattern>
-
-                        <!-- Mask for Wing Animation Effects -->
                         <filter id="goldGlow" x="-20%" y="-20%" width="140%" height="140%">
                             <feGaussianBlur stdDeviation="8" result="blur" />
                             <feComposite in="SourceGraphic" in2="blur" operator="over" />
                         </filter>
                     </defs>
 
-                    <!-- Backlight Soft Glow -->
                     <circle cx="250" cy="250" r="190" fill="rgba(212, 175, 55, 0.06)" filter="url(#goldGlow)" />
 
-                    <!-- Main Original Artwork Render -->
                     <g id="artworkLionGroup">
-                        <!-- Animated Left Wing Segment -->
                         <g class="wing-animate-left">
                             <rect width="500" height="500" fill="url(#lionImagePattern)"/>
                         </g>
-
-                        <!-- Animated Right Wing Segment Overlay -->
                         <g class="wing-animate-right" style="animation-delay: -0.3s;">
-                            <!-- Subtle Wing Motion Overlay to simulate flapping feathers -->
                             <path d="M 220 100 Q 320 20 420 120 Q 340 220 220 260 Z" fill="rgba(245,226,179,0.08)" />
                         </g>
                     </g>
                 </svg>
-
-                <!-- Floating Magic Petals around Lion Body -->
                 <div id="lionSparkles" class="absolute inset-0 pointer-events-none"></div>
             </div>
         </div>
 
-        <!-- STAGE CONTENT DISPLAY AREA -->
+        <!-- STAGES -->
         <div class="w-full max-w-5xl relative min-h-[440px]">
 
-            <!-- STAGE 1: INTRO / WELCOME -->
+            <!-- STAGE 1: WELCOME -->
             <section id="stage-1" class="stage-view stage-visible text-center flex flex-col items-center justify-center py-4">
                 <div class="inline-block px-4 py-1.5 mb-4 rounded-full border border-gold-500/40 bg-night-800/60 text-gold-400 text-xs tracking-widest uppercase font-cinzel">
                     ✨ Легенда Емпіреосу
@@ -303,7 +280,6 @@
                     «Він охороняє таємниці небес і вітрів. Дозвольте крилатому вартівнику провести вас крізь сторінки історії про любов, зраду та магію.»
                 </p>
 
-                <!-- Interactive Action Button -->
                 <button onclick="nextStage()" class="btn-mythic px-9 py-4 rounded-full font-cinzel font-bold text-sm tracking-wider flex items-center space-x-3 group">
                     <span>ПОЧАТИ ПОДОРОЖ</span>
                     <i class="fa-solid fa-feather-pointed text-lg group-hover:translate-x-1 transition-transform"></i>
@@ -311,13 +287,14 @@
             </section>
 
 
-            <!-- STAGE 2: TWO MAIN HEROINES (NYSSA & AELLA) -->
+            <!-- STAGE 2: HEROINES (NYSSA & AELLA) -->
             <section id="stage-2" class="stage-view stage-hidden">
                 <div class="text-center mb-6">
                     <span class="text-xs font-cinzel text-gold-400 tracking-widest uppercase">Розділ I • Головні Постаті</span>
                     <h2 class="text-3xl md:text-4xl font-cinzel font-bold text-slate-100 mt-1 glow-text-gold">
                         Головні Героїні
                     </h2>
+                    <p class="text-xs text-slate-400 font-cinzel mt-1">🔍 Натисніть на картинку для детального збільшення</p>
                     <div class="w-24 h-0.5 bg-gradient-to-r from-transparent via-gold-500 to-transparent mx-auto mt-2"></div>
                 </div>
 
@@ -326,10 +303,17 @@
                     <!-- HEROINE 1: NYSSA -->
                     <div class="gold-border-frame rounded-2xl p-6 flex flex-col items-center text-center card-magic-hover group">
                         <div class="relative mb-6">
-                            <!-- Oval Portrait Frame using provided Artwork -->
-                            <div class="w-56 h-72 md:w-64 md:h-80 oval-portrait-frame bg-night-900 flex items-center justify-center relative overflow-hidden">
-                                <img src="Nyssa.jpg" alt="Nyssa" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" onerror="this.onerror=null; this.src='https://placehold.co/400x500/101426/d4af37?text=Nyssa';"/>
-                                <div class="absolute inset-0 bg-gradient-to-t from-night-900/90 via-transparent to-transparent"></div>
+                            <!-- Clickable Zoom Portrait -->
+                            <div class="w-56 h-72 md:w-64 md:h-80 oval-portrait-frame bg-night-900 flex items-center justify-center relative overflow-hidden cursor-pointer zoom-trigger"
+                                 onclick="openZoomModal('nyssa.jpg', 'Nyssa', 'Nyssa.jpg')">
+                                <img id="img-nyssa" src="nyssa.jpg" alt="Nyssa" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" 
+                                     onerror="this.onerror=null; this.src='Nyssa.jpg';"/>
+                                
+                                <div class="zoom-overlay absolute inset-0 flex flex-col items-center justify-center text-gold-400">
+                                    <i class="fa-solid fa-magnifying-glass-plus text-3xl mb-1"></i>
+                                    <span class="text-xs font-cinzel uppercase tracking-wider font-semibold">Збільшити</span>
+                                </div>
+
                                 <div class="absolute bottom-3 z-20 text-center w-full px-2">
                                     <span class="text-[10px] md:text-xs font-cinzel text-gold-400 bg-night-900/90 px-3 py-1 rounded-full border border-gold-500/50">SONGBIRD OF THE SORROWS</span>
                                 </div>
@@ -343,20 +327,27 @@
                             «Ніжний голос серед темряви та вірний компаньйон. Її поезія здатна зцілювати душевні рани, але її власне серце приховує глибоку печаль.»
                         </p>
 
-                        <div class="mt-6 pt-4 border-t border-gold-500/20 w-full flex justify-center space-x-3 text-gold-500 text-sm">
-                            <i class="fa-solid fa-feather"></i>
-                            <i class="fa-solid fa-music"></i>
-                            <i class="fa-solid fa-heart text-xs"></i>
+                        <div class="mt-6 pt-4 border-t border-gold-500/20 w-full flex justify-center items-center space-x-3">
+                            <button onclick="openZoomModal('nyssa.jpg', 'Nyssa', 'Nyssa.jpg')" class="text-xs font-cinzel text-gold-400 hover:text-white flex items-center space-x-1 bg-night-800 px-3 py-1.5 rounded-full border border-gold-500/40">
+                                <i class="fa-solid fa-expand text-xs"></i> <span>Зумити картинку</span>
+                            </button>
                         </div>
                     </div>
 
                     <!-- HEROINE 2: AELLA -->
                     <div class="gold-border-frame rounded-2xl p-6 flex flex-col items-center text-center card-magic-hover group">
                         <div class="relative mb-6">
-                            <!-- Oval Portrait Frame using provided Artwork -->
-                            <div class="w-56 h-72 md:w-64 md:h-80 oval-portrait-frame bg-night-900 flex items-center justify-center relative overflow-hidden">
-                                <img src="Aella.jpg" alt="Aella" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" onerror="this.onerror=null; this.src='https://placehold.co/400x500/101426/72efdd?text=Aella';"/>
-                                <div class="absolute inset-0 bg-gradient-to-t from-night-900/90 via-transparent to-transparent"></div>
+                            <!-- Clickable Zoom Portrait -->
+                            <div class="w-56 h-72 md:w-64 md:h-80 oval-portrait-frame bg-night-900 flex items-center justify-center relative overflow-hidden cursor-pointer zoom-trigger"
+                                 onclick="openZoomModal('aella.jpg', 'Aella', 'Aella.jpg')">
+                                <img id="img-aella" src="aella.jpg" alt="Aella" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" 
+                                     onerror="this.onerror=null; this.src='Aella.jpg';"/>
+                                
+                                <div class="zoom-overlay absolute inset-0 flex flex-col items-center justify-center text-mythic-cyan">
+                                    <i class="fa-solid fa-magnifying-glass-plus text-3xl mb-1"></i>
+                                    <span class="text-xs font-cinzel uppercase tracking-wider font-semibold">Збільшити</span>
+                                </div>
+
                                 <div class="absolute bottom-3 z-20 text-center w-full px-2">
                                     <span class="text-[10px] md:text-xs font-cinzel text-mythic-cyan bg-night-900/90 px-3 py-1 rounded-full border border-mythic-cyan/50">DAUGHTER OF THE TEMPEST</span>
                                 </div>
@@ -370,16 +361,15 @@
                             «Шпигунка та принцеса, що володіє клинком і магією бурі. Вона маневрує між королівськими інтригами та смертельними небезпеками.»
                         </p>
 
-                        <div class="mt-6 pt-4 border-t border-gold-500/20 w-full flex justify-center space-x-3 text-mythic-cyan text-sm">
-                            <i class="fa-solid fa-hand-holding-hand"></i>
-                            <i class="fa-solid fa-mask"></i>
-                            <i class="fa-solid fa-bolt"></i>
+                        <div class="mt-6 pt-4 border-t border-gold-500/20 w-full flex justify-center items-center space-x-3">
+                            <button onclick="openZoomModal('aella.jpg', 'Aella', 'Aella.jpg')" class="text-xs font-cinzel text-mythic-cyan hover:text-white flex items-center space-x-1 bg-night-800 px-3 py-1.5 rounded-full border border-mythic-cyan/40">
+                                <i class="fa-solid fa-expand text-xs"></i> <span>Зумити картинку</span>
+                            </button>
                         </div>
                     </div>
 
                 </div>
 
-                <!-- Stage Controls -->
                 <div class="mt-8 flex justify-center space-x-4">
                     <button onclick="prevStage()" class="px-6 py-3 rounded-full border border-gold-500/40 text-gold-400 font-cinzel text-xs hover:bg-gold-500/10 transition-colors">
                         <i class="fa-solid fa-arrow-left mr-2"></i> Назад
@@ -398,6 +388,7 @@
                     <h2 class="text-3xl md:text-4xl font-cinzel font-bold text-slate-100 mt-1 glow-text-gold">
                         Теми та Тропи
                     </h2>
+                    <p class="text-xs text-slate-400 font-cinzel mt-1">🔍 Натисніть на будь-яку з двіх картинок для розгортання на весь екран</p>
                     <div class="w-24 h-0.5 bg-gradient-to-r from-transparent via-gold-500 to-transparent mx-auto mt-2"></div>
                 </div>
 
@@ -405,11 +396,16 @@
 
                     <!-- CARD 1: THEMES (ТЕМИ) -->
                     <div class="gold-border-frame rounded-2xl p-6 flex flex-col justify-between card-magic-hover relative overflow-hidden group">
-                        <!-- Embedded Image Showcase Frame -->
-                        <div class="mb-4 rounded-xl overflow-hidden border border-gold-500/30 max-h-48 relative">
-                            <img src="photo_2026-10-19_10-02-53.jpg" alt="Теми" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" onerror="this.onerror=null; this.src='https://placehold.co/600x300/101426/d4af37?text=Теми+Та+Цитати';"/>
-                            <div class="absolute inset-0 bg-gradient-to-t from-night-900 via-transparent to-transparent"></div>
-                            <span class="absolute bottom-2 left-3 text-xs font-cinzel text-gold-400 font-bold">СПИСОК ТРОПІВ? НІ. ТЕМИ? ТАК!</span>
+                        <!-- Clickable Image Showcase Frame -->
+                        <div class="mb-4 rounded-xl overflow-hidden border border-gold-500/30 h-52 relative cursor-pointer zoom-trigger"
+                             onclick="openZoomModal('themes.jpg', 'Теми та Цитати', 'photo_2026-10-19_10-02-53.jpg')">
+                            <img id="img-themes" src="themes.jpg" alt="Теми" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" 
+                                 onerror="this.onerror=null; this.src='photo_2026-10-19_10-02-53.jpg';"/>
+                            <div class="zoom-overlay absolute inset-0 flex flex-col items-center justify-center text-gold-400">
+                                <i class="fa-solid fa-magnifying-glass-plus text-3xl mb-1"></i>
+                                <span class="text-xs font-cinzel uppercase tracking-wider font-semibold">Розгорнути Теми</span>
+                            </div>
+                            <span class="absolute bottom-2 left-3 text-xs font-cinzel text-gold-400 font-bold bg-night-900/80 px-2 py-0.5 rounded">СПИСОК ТРОПІВ? НІ. ТЕМИ? ТАК!</span>
                         </div>
 
                         <div>
@@ -428,64 +424,68 @@
                                 </li>
                                 <li class="flex items-start space-x-2">
                                     <i class="fa-solid fa-quote-left text-gold-500 text-xs mt-1"></i>
-                                    <span>«На що ти готовий піти заради любові?»</span>
-                                </li>
-                                <li class="flex items-start space-x-2">
-                                    <i class="fa-solid fa-quote-left text-gold-500 text-xs mt-1"></i>
                                     <span>«Ціна лояльності оплачена тишею.»</span>
                                 </li>
                             </ul>
                         </div>
 
                         <div class="mt-4 pt-3 border-t border-gold-500/20 flex items-center justify-between text-xs text-slate-400 font-cinzel">
-                            <span>Книга: Daughter of the Tempest</span>
+                            <button onclick="openZoomModal('themes.jpg', 'Теми та Цитати', 'photo_2026-10-19_10-02-53.jpg')" class="text-gold-400 hover:text-white flex items-center space-x-1">
+                                <i class="fa-solid fa-maximize"></i> <span>Розгорнути картинку</span>
+                            </button>
                             <span class="text-gold-400"><i class="fa-solid fa-book-bookmark"></i> Braidee Otto</span>
                         </div>
                     </div>
 
                     <!-- CARD 2: TROPES (ТРОПИ) -->
                     <div class="gold-border-frame rounded-2xl p-6 flex flex-col justify-between card-magic-hover relative overflow-hidden group">
-                        <!-- Embedded Image Showcase Frame -->
-                        <div class="mb-4 rounded-xl overflow-hidden border border-mythic-cyan/30 max-h-48 relative">
-                            <img src="4b85fa6e-512e-463f-9543-e7109f4dad8e.jpg" alt="Тропи" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" onerror="this.onerror=null; this.src='https://placehold.co/600x300/101426/72efdd?text=Список+Тропів';"/>
-                            <div class="absolute inset-0 bg-gradient-to-t from-night-900 via-transparent to-transparent"></div>
-                            <span class="absolute bottom-2 left-3 text-xs font-cinzel text-mythic-cyan font-bold">ОФІЦІЙНІ ТРОПИ</span>
+                        <!-- Clickable Image Showcase Frame -->
+                        <div class="mb-4 rounded-xl overflow-hidden border border-mythic-cyan/30 h-52 relative cursor-pointer zoom-trigger"
+                             onclick="openZoomModal('tropes.jpg', 'Список Тропів', '4b85fa6e-512e-463f-9543-e7109f4dad8e.jpg')">
+                            <img id="img-tropes" src="tropes.jpg" alt="Тропи" class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-500" 
+                                 onerror="this.onerror=null; this.src='4b85fa6e-512e-463f-9543-e7109f4dad8e.jpg';"/>
+                            <div class="zoom-overlay absolute inset-0 flex flex-col items-center justify-center text-mythic-cyan">
+                                <i class="fa-solid fa-magnifying-glass-plus text-3xl mb-1"></i>
+                                <span class="text-xs font-cinzel uppercase tracking-wider font-semibold">Розгорнути Тропи</span>
+                            </div>
+                            <span class="absolute bottom-2 left-3 text-xs font-cinzel text-mythic-cyan font-bold bg-night-900/80 px-2 py-0.5 rounded">ОФІЦІЙНІ ТРОПИ</span>
                         </div>
 
                         <div>
                             <div class="space-y-2 font-cinzel">
-                                <div class="p-2.5 rounded-lg bg-night-800/80 border border-gold-500/30 flex items-center justify-between hover:border-gold-400 transition-colors">
-                                    <span class="text-slate-100 text-xs md:text-sm font-semibold">⚡ Епічне Романтичне Фентезі</span>
-                                    <i class="fa-solid fa-wand-magic-sparkles text-gold-400 text-xs"></i>
+                                <div class="p-2 rounded-lg bg-night-800/80 border border-gold-500/30 flex items-center justify-between text-xs md:text-sm">
+                                    <span class="text-slate-100 font-semibold">⚡ Епічне Романтичне Фентезі</span>
+                                    <i class="fa-solid fa-wand-magic-sparkles text-gold-400"></i>
                                 </div>
-                                <div class="p-2.5 rounded-lg bg-night-800/80 border border-gold-500/30 flex items-center justify-between hover:border-gold-400 transition-colors">
-                                    <span class="text-slate-100 text-xs md:text-sm font-semibold">🔄 Другий Шанс</span>
-                                    <i class="fa-solid fa-rotate-left text-gold-400 text-xs"></i>
+                                <div class="p-2 rounded-lg bg-night-800/80 border border-gold-500/30 flex items-center justify-between text-xs md:text-sm">
+                                    <span class="text-slate-100 font-semibold">🔄 Другий Шанс</span>
+                                    <i class="fa-solid fa-rotate-left text-gold-400"></i>
                                 </div>
-                                <div class="p-2.5 rounded-lg bg-night-800/80 border border-gold-500/30 flex items-center justify-between hover:border-gold-400 transition-colors">
-                                    <span class="text-slate-100 text-xs md:text-sm font-semibold">🕯️ Повільний Роман (Slow Burn)</span>
-                                    <i class="fa-solid fa-fire text-gold-400 text-xs"></i>
+                                <div class="p-2 rounded-lg bg-night-800/80 border border-gold-500/30 flex items-center justify-between text-xs md:text-sm">
+                                    <span class="text-slate-100 font-semibold">🕯️ Повільний Роман (Slow Burn)</span>
+                                    <i class="fa-solid fa-fire text-gold-400"></i>
                                 </div>
-                                <div class="p-2.5 rounded-lg bg-night-800/80 border border-gold-500/30 flex items-center justify-between hover:border-gold-400 transition-colors">
-                                    <span class="text-slate-100 text-xs md:text-sm font-semibold">🛡️ Кращі Друзі</span>
-                                    <i class="fa-solid fa-shield-halved text-gold-400 text-xs"></i>
+                                <div class="p-2 rounded-lg bg-night-800/80 border border-gold-500/30 flex items-center justify-between text-xs md:text-sm">
+                                    <span class="text-slate-100 font-semibold">🛡️ Кращі Друзі</span>
+                                    <i class="fa-solid fa-shield-halved text-gold-400"></i>
                                 </div>
-                                <div class="p-2.5 rounded-lg bg-night-800/80 border border-gold-500/30 flex items-center justify-between hover:border-gold-400 transition-colors">
-                                    <span class="text-slate-100 text-xs md:text-sm font-semibold">🏛️ Натхненне Грецькими Міфами</span>
-                                    <i class="fa-solid fa-landmark text-gold-400 text-xs"></i>
+                                <div class="p-2 rounded-lg bg-night-800/80 border border-gold-500/30 flex items-center justify-between text-xs md:text-sm">
+                                    <span class="text-slate-100 font-semibold">🏛️ Натхненне Грецькими Міфами</span>
+                                    <i class="fa-solid fa-landmark text-gold-400"></i>
                                 </div>
                             </div>
                         </div>
 
                         <div class="mt-4 pt-3 border-t border-gold-500/20 flex items-center justify-between text-xs text-slate-400 font-cinzel">
-                            <span>Світ: Myths of the Empyreos</span>
-                            <span class="text-mythic-cyan"><i class="fa-solid fa-feather text-xs"></i> Огляд Всесвіту</span>
+                            <button onclick="openZoomModal('tropes.jpg', 'Список Тропів', '4b85fa6e-512e-463f-9543-e7109f4dad8e.jpg')" class="text-mythic-cyan hover:text-white flex items-center space-x-1">
+                                <i class="fa-solid fa-maximize"></i> <span>Розгорнути картинку</span>
+                            </button>
+                            <span class="text-mythic-cyan"><i class="fa-solid fa-feather"></i> Огляд Всесвіту</span>
                         </div>
                     </div>
 
                 </div>
 
-                <!-- Stage Controls -->
                 <div class="mt-8 flex justify-center space-x-4">
                     <button onclick="prevStage()" class="px-6 py-3 rounded-full border border-gold-500/40 text-gold-400 font-cinzel text-xs hover:bg-gold-500/10 transition-colors">
                         <i class="fa-solid fa-arrow-left mr-2"></i> Назад
@@ -499,6 +499,31 @@
         </div>
     </main>
 
+    <!-- FULLSCREEN IMAGE ZOOM LIGHTBOX MODAL -->
+    <div id="zoomModal" class="fixed inset-0 z-50 flex items-center justify-center p-4 bg-black/90 backdrop-blur-md opacity-0 invisible" onclick="closeZoomModalOnBackdrop(event)">
+        <!-- Modal Container -->
+        <div class="relative max-w-4xl max-h-[90vh] flex flex-col items-center justify-center">
+            
+            <!-- Close Header -->
+            <div class="absolute -top-12 right-0 flex items-center space-x-4">
+                <button onclick="zoomModalToggleScale()" class="text-slate-300 hover:text-gold-400 text-sm font-cinzel px-3 py-1 bg-night-800/80 rounded-full border border-gold-500/30 transition-colors">
+                    <i class="fa-solid fa-magnifying-glass-plus mr-1"></i> <span id="zoomToggleText">Збільшити 100%</span>
+                </button>
+                <button onclick="closeZoomModal()" class="w-10 h-10 rounded-full bg-gold-500/20 hover:bg-gold-500 border border-gold-500 text-gold-400 hover:text-night-900 transition-all flex items-center justify-center">
+                    <i class="fa-solid fa-xmark text-xl"></i>
+                </button>
+            </div>
+
+            <!-- Image Wrapper -->
+            <div id="modalImageWrapper" class="overflow-auto max-h-[82vh] max-w-full rounded-xl border-2 border-gold-500/60 shadow-[0_0_50px_rgba(212,175,55,0.3)] bg-night-900">
+                <img id="modalImage" src="" alt="Zoomed view" class="max-h-[80vh] w-auto object-contain transition-transform duration-300 cursor-zoom-in" onclick="zoomModalToggleScale()"/>
+            </div>
+
+            <!-- Caption -->
+            <div id="modalCaption" class="mt-3 text-center font-cinzel text-gold-400 text-sm font-semibold tracking-wider"></div>
+        </div>
+    </div>
+
     <!-- FOOTER -->
     <footer class="relative z-20 border-t border-gold-500/20 py-4 text-center text-xs text-slate-400 font-cinzel">
         <p>© Daughter of the Tempest • Інтерактивна Презентація</p>
@@ -511,38 +536,32 @@
         let currentStage = 1;
         const totalStages = 3;
 
-        // Transition logic with flying lion flight effect
         function goToStage(stageNum) {
             if (stageNum === currentStage) return;
 
             const lion = document.getElementById('lionContainer');
             
-            // Swooping Lion Flight Animation Across Screen
+            // Swooping Lion Flight Animation
             lion.style.transform = `translate(${stageNum > currentStage ? '160px' : '-160px'}, -50px) rotate(${stageNum > currentStage ? '15deg' : '-15deg'}) scale(1.1)`;
             lion.style.opacity = '0.8';
 
             createMagicDustBurst();
 
             setTimeout(() => {
-                // Hide current stage
                 const currentEl = document.getElementById(`stage-${currentStage}`);
                 currentEl.classList.remove('stage-visible');
                 currentEl.classList.add('stage-hidden');
 
-                // Update nav highlights
                 document.getElementById(`nav-btn-${currentStage}`).className = "transition-colors duration-300 py-1 border-b-2 border-transparent text-slate-400 hover:text-gold-400";
                 
-                // Update stage reference
                 currentStage = stageNum;
 
-                // Show new stage
                 const nextEl = document.getElementById(`stage-${currentStage}`);
                 nextEl.classList.remove('stage-hidden');
                 nextEl.classList.add('stage-visible');
 
                 document.getElementById(`nav-btn-${currentStage}`).className = "transition-colors duration-300 py-1 border-b-2 border-gold-500 text-gold-400 font-semibold";
 
-                // Return Lion smoothly to initial floating posture
                 lion.style.transform = 'translate(0px, 0px) rotate(0deg) scale(1)';
                 lion.style.opacity = '1';
             }, 600);
@@ -562,7 +581,6 @@
             }
         }
 
-        // Interactive Click Burst on Lion
         function triggerLionRoar() {
             const lion = document.getElementById('lionContainer');
             lion.style.transform = 'scale(1.12) translateY(-10px)';
@@ -573,7 +591,67 @@
             }, 300);
         }
 
-        // Canvas Particles & Stars Effect
+        // IMAGE ZOOM LIGHTBOX MODAL LOGIC
+        let isScaledUp = false;
+
+        function openZoomModal(imageSrc, caption, fallbackSrc) {
+            const modal = document.getElementById('zoomModal');
+            const modalImg = document.getElementById('modalImage');
+            const modalCaption = document.getElementById('modalCaption');
+            
+            modalImg.src = imageSrc;
+            modalImg.onerror = function() {
+                if (fallbackSrc) this.src = fallbackSrc;
+            };
+
+            modalCaption.innerText = caption;
+            
+            isScaledUp = false;
+            modalImg.style.transform = 'scale(1)';
+            modalImg.className = 'max-h-[80vh] w-auto object-contain transition-transform duration-300 cursor-zoom-in';
+            document.getElementById('zoomToggleText').innerText = 'Збільшити 100%';
+
+            modal.classList.remove('opacity-0', 'invisible');
+            modal.classList.add('opacity-100');
+        }
+
+        function closeZoomModal() {
+            const modal = document.getElementById('zoomModal');
+            modal.classList.remove('opacity-100');
+            modal.classList.add('opacity-0', 'invisible');
+        }
+
+        function closeZoomModalOnBackdrop(event) {
+            if (event.target.id === 'zoomModal') {
+                closeZoomModal();
+            }
+        }
+
+        function zoomModalToggleScale() {
+            const modalImg = document.getElementById('modalImage');
+            const toggleText = document.getElementById('zoomToggleText');
+
+            if (!isScaledUp) {
+                modalImg.style.transform = 'scale(1.6)';
+                modalImg.className = 'max-h-[80vh] w-auto object-contain transition-transform duration-300 cursor-zoom-out';
+                toggleText.innerText = 'Зменшити';
+                isScaledUp = true;
+            } else {
+                modalImg.style.transform = 'scale(1)';
+                modalImg.className = 'max-h-[80vh] w-auto object-contain transition-transform duration-300 cursor-zoom-in';
+                toggleText.innerText = 'Збільшити 100%';
+                isScaledUp = false;
+            }
+        }
+
+        // ESC key listener to close modal
+        document.addEventListener('keydown', function(event) {
+            if (event.key === 'Escape') {
+                closeZoomModal();
+            }
+        });
+
+        // CANVAS BACKGROUND PARTICLES
         const canvas = document.getElementById('starCanvas');
         const ctx = canvas.getContext('2d');
 
@@ -590,10 +668,7 @@
         resizeCanvas();
 
         class Particle {
-            constructor() {
-                this.reset();
-            }
-
+            constructor() { this.reset(); }
             reset() {
                 this.x = Math.random() * width;
                 this.y = Math.random() * height;
@@ -603,16 +678,13 @@
                 this.alpha = Math.random() * 0.8 + 0.2;
                 this.isCyan = Math.random() > 0.8;
             }
-
             update() {
                 this.y -= this.speedY;
                 this.x += this.speedX;
-
                 if (this.y < 0) this.y = height;
                 if (this.x < 0) this.x = width;
                 if (this.x > width) this.x = 0;
             }
-
             draw() {
                 ctx.save();
                 ctx.globalAlpha = this.alpha;
